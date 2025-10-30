@@ -76,7 +76,7 @@
     <h2>BUY AIRTIME FLOAT</h2>
     <input type="text" id="nationalId" placeholder="National ID/User ID (e.g. 23406633)">
     <input type="number" id="amount" placeholder="Amount (KSh, min 100)" min="100">
-    <div id="airtimeValue">Shopkeeper will receive: KSh 0.00</div>
+    <div id="airtimeValue">You will receive Airtime Float of: KSh 0.00</div>
     <input type="text" id="mpesaNumber" placeholder="Mpesa Number (e.g. 0712345678)">
     <button onclick="buyFloat()">Pay & Buy Float</button>
     <div id="response"></div>
@@ -89,12 +89,13 @@
     const amountInput = document.getElementById('amount');
     const airtimeValueDiv = document.getElementById('airtimeValue');
 
-    // Update airtime display as user types
+    // Update airtime display as user types with commas
     amountInput.addEventListener('input', () => {
       const value = Number(amountInput.value);
       if (!isNaN(value) && value >= 0) {
         const calculated = (value * 1.05).toFixed(2);
-        airtimeValueDiv.innerText = `You will receive Airtime Float of: KSh ${calculated}`;
+        const formatted = Number(calculated).toLocaleString('en-KE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        airtimeValueDiv.innerText = `You will receive Airtime Float of: KSh ${formatted}`;
       } else {
         airtimeValueDiv.innerText = 'You will receive Airtime Float of: KSh 0.00';
       }
