@@ -94,9 +94,9 @@
       const value = Number(amountInput.value);
       if (!isNaN(value) && value >= 0) {
         const calculated = (value * 1.05).toFixed(2);
-        airtimeValueDiv.innerText = `Shopkeeper will receive: KSh ${calculated}`;
+        airtimeValueDiv.innerText = `You will receive Airtime Float of: KSh ${calculated}`;
       } else {
-        airtimeValueDiv.innerText = 'Shopkeeper will receive: KSh 0.00';
+        airtimeValueDiv.innerText = 'You will receive Airtime Float of: KSh 0.00';
       }
     });
 
