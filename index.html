@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Shopkeeper Airtime Float Purchase</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+    }
+    .container {
+      background: #ffffff;
+      color: #333;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      width: 100%;
+      max-width: 400px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #2575fc;
+    }
+    input {
+      padding: 12px;
+      margin: 10px 0;
+      width: 100%;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+    }
+    button {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 10px;
+      background: #28a745;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #218838;
+    }
+    #response {
+      margin-top: 20px;
+      font-weight: bold;
+      color: #333;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    @keyframes fadeIn {
+      from {opacity:0; transform: translateY(-20px);}
+      to {opacity:1; transform: translateY(0);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Airtime Float Purchase</h2>
+    <input type="text" id="nationalId" placeholder="National ID (e.g. 23406633)">
+    <input type="number" id="amount" placeholder="Amount (KSh, min 3)" min="3">
+    <input type="text" id="mpesaNumber" placeholder="Mpesa Number (e.g. 0712345678)">
+    <button onclick="buyFloat()">Pay & Buy Float</button>
+    <div id="response"></div>
+  </div>
+
+  <script>
+    const WORKER_URL = 'https://frosty-shape-098d.dmaundu02.workers.dev/'; // Cloudflare Worker URL
+    const API_KEY = 'masomo-secure-key-2025'; // Must match key in Worker
+
+    async function buyFloat() {
+      const nationalId = document.getElementById('nationalId').value.trim();
+      const amount = Number(document.getElementById('amount').value.trim());
+      const mpesaNumber = document.getElementById('mpesaNumber').value.trim();
+
+      const responseDiv = document.getElementById('response');
+      responseDiv.innerText = "";
+
+      if (!nationalId || !amount || !mpesaNumber) {
+        responseDiv.innerText = "Please fill all fields.";
+        return;
+      }
+      if (amount < 3) {
+        responseDiv.innerText = "Amount must be at least KSh 3.";
+        return;
+      }
+
+      responseDiv.innerText = "Initiating STK push...";
+
+      try {
+        const res = await fetch(WORKER_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': API_KEY
+          },
+          body: JSON.stringify({ nationalId, amount, mpesaNumber })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          let msg = data.message || "STK push sent. Check your phone.";
+          if (data.lipadResponse) msg += "\n\nRaw Lipad Response:\n" + JSON.stringify(data.lipadResponse, null, 2);
+          responseDiv.innerText = msg;
+        } else {
+          let msg = "Error: " + (data.message || "Failed to initiate payment.");
+          if (data.lipadResponse) msg += "\n\nRaw Lipad Response:\n" + JSON.stringify(data.lipadResponse, null, 2);
+          responseDiv.innerText = msg;
+        }
+
+      } catch (err) {
+        responseDiv.innerText = "Error: " + err.message;
+      }
+    }
+  </script>
+</body>
+</html>
