@@ -84,7 +84,6 @@
       const nationalId = document.getElementById('nationalId').value.trim();
       const amount = Number(document.getElementById('amount').value.trim());
       const mpesaNumber = document.getElementById('mpesaNumber').value.trim();
-
       const responseDiv = document.getElementById('response');
       responseDiv.innerText = "";
 
@@ -117,7 +116,7 @@
           responseDiv.innerText = msg;
         } else {
           let msg = "Error: " + (data.message || "Failed to initiate payment.");
-          if (data.lipadResponse) msg += "\n\nRaw Lipad Response:\n" + JSON.stringify(data.lipadResponse, null, 2);
+          if (data.raw) msg += "\n\nRaw Response:\n" + data.raw;
           responseDiv.innerText = msg;
         }
 
